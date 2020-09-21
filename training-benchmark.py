@@ -4,6 +4,7 @@ import time
 import timeit
 import argparse
 import pkbar
+import numpy as np
 from torchani.units import hartree2kcalmol
 
 synchronize = False
@@ -63,8 +64,19 @@ if __name__ == "__main__":
                         default=2560, type=int)
     parser.add_argument('-n', '--num_epochs',
                         help='epochs',
-                        default=1, type=int)
+                        default=3, type=int)
+    parser.add_argument('-e', '--ensembles_size',
+                        help='Number of ensembles',
+                        default=4, type=int)
+    parser.add_argument('-i', '--ensemble_index',
+                        help='Index of current ensemble (zero-indexed)',
+                        default=0, type=int)
+    parser.add_argument('-s', '--seed',
+                        help='Seed for reproducible shuffling',
+                        default=12345, type=int)
     parser = parser.parse_args()
+    # for reproducible shuffling
+    torch.manual_seed(parser.seed)
 
     Rcr = 5.2000e+00
     Rca = 3.5000e+00
@@ -84,16 +96,32 @@ if __name__ == "__main__":
 
     print('=> loading dataset...')
     shifter = torchani.EnergyShifter(None)
-    dataset = list(torchani.data.load(parser.dataset_path).subtract_self_energies(shifter).species_to_indices().shuffle().collate(parser.batch_size))
+    dataset = list(torchani.data.load(parser.dataset_path).subtract_self_energies(shifter).species_to_indices())
+    print()
+    shuffled_indices = torch.randperm(len(dataset))
+    shuffled_indices_ensembles = torch.chunk(shuffled_indices, parser.ensembles_size)
+    training_ensemble_indices = [i for i in range(parser.ensembles_size) if i != parser.ensemble_index]
+    validation_ensemble_index = parser.ensemble_index
+    training_indices = [d for i, d in enumerate(shuffled_indices_ensembles) if i != parser.ensemble_index]
+    training_indices = torch.cat(training_indices)
+    validation_indices = shuffled_indices_ensembles[validation_ensemble_index]
+    training_dataset = [dataset[i] for i in training_indices]
+    validation_dataset = [dataset[i] for i in validation_indices]
+    print('Ensemble index (For validation): {}'.format(parser.ensemble_index))
+    print('Other ensemble index (training): {}'.format(training_ensemble_indices))
+
+    training_dataset = torch.utils.data.DataLoader(training_dataset, batch_size=parser.batch_size, collate_fn=torchani.data.collate_fn, num_workers=2)
+    validation_dataset = torch.utils.data.DataLoader(validation_dataset, batch_size=parser.batch_size, collate_fn=torchani.data.collate_fn, num_workers=2)
 
     print('=> start training')
 
     for epoch in range(0, parser.num_epochs):
-
+        # training
+        model.train()
         print('Epoch: %d/%d' % (epoch + 1, parser.num_epochs))
-        progbar = pkbar.Kbar(target=len(dataset) - 1, width=8)
+        progbar = pkbar.Kbar(target=len(training_dataset), width=8)
 
-        for i, properties in enumerate(dataset):
+        for i, properties in enumerate(training_dataset):
             species = properties['species'].to(parser.device)
             coordinates = properties['coordinates'].to(parser.device).float()
             true_energies = properties['energies'].to(parser.device).float()
@@ -104,4 +132,22 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
 
-            progbar.update(i, values=[("rmse", rmse)])
+            progbar.update(i, values=[("train_rmse", rmse)])
+
+        # validation
+        model.eval()
+        val_rmse_kcal = []
+
+        with torch.no_grad():
+            for i, properties in enumerate(validation_dataset):
+                species = properties['species'].to(parser.device)
+                coordinates = properties['coordinates'].to(parser.device).float()
+                true_energies = properties['energies'].to(parser.device).float()
+                num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
+                _, predicted_energies = model((species, coordinates))
+                loss = (mse(predicted_energies, true_energies) / num_atoms.sqrt()).mean()
+                rmse = hartree2kcalmol((mse(predicted_energies, true_energies)).mean()).detach().cpu().numpy()
+
+                val_rmse_kcal.append(rmse)
+            val_rmse_kcal_mean = np.mean(val_rmse_kcal)
+            progbar.add(1, values=[("val_rmse_kcal", val_rmse_kcal_mean)])
