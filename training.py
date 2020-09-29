@@ -6,10 +6,10 @@ import numpy as np
 from torchani.units import hartree2kcalmol
 
 # network input size should match AEV output size:
-# 2 elments: AEV size 128 (32 (16*2) + 96 (8*4*(C3(2))))
-# 4 elments: AEV size 384 (64 (16*4) + 320 (8*4*(C5(2))))
-# 5 elments: AEV size 560 (80(16*5) + 480 (8*4*(C6(2))))
-# 6 elments: AEV size 768 (96(16*6) + 672 (8*4*(C7(2))))
+# 2 elments: AEV size is 128 = 16*2 + 8*4*C3(2) = 32 (radial) + 96 (angular)
+# 4 elments: AEV size is 384 = 16*4 + 8*4*C5(2) = 64 + 320
+# 5 elments: AEV size is 560 = 16*5 + 8*4*C6(2) = 80 + 480
+# 6 elments: AEV size is 768 = 16*6 + 8*4*C7(2) = 96 + 672
 
 H_network = torch.nn.Sequential(
     torch.nn.Linear(768, 160),
