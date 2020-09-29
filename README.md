@@ -39,3 +39,6 @@ Usage Example:
 ```bash
 python training-ensemble.py --ensembles_size 8 --ensemble_index 0 --seed 12345 dataset.h5
 ```
+
+## AEV calculation
+Because of padding issue with different length molecules, `aev_calc.ipynb` walks through some ways on how to calculate aevs for single molecule, multiple molecules, or ASE molecules.
