@@ -2,7 +2,8 @@
 
 ## Requirements
 ```
-conda install pytorch torchvision cudatoolkit=10.2 -c pytorch  # GPU version, for CPU version go https://pytorch.org/
+# pytorch GPU version, for CPU version go https://pytorch.org/
+conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
 pip install torchani
 ```
 
