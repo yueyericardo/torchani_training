@@ -22,7 +22,7 @@ Usage Example:
 ```bash
 python training.py --num_epochs 10 --batch_size 100 dataset.h5
 ```
-Output: Because this dataset's datapints are fake, it quickly went to overfit, learning rate may need to be adjusted in this case.
+Output: Because this dataset's datapoints are fake, it quickly went to overfit, learning rate may need to be adjusted in this case.
 ```
 => loading dataset...
 => loading dataset.h5, total molecules: 2
@@ -41,7 +41,7 @@ Epoch: 4/10
 ...
 ```
 
-## Ensemble traning
+## Ensemble training
 Usage Example:
 ```bash
 python training-ensemble.py --ensembles_size 8 --ensemble_index 0 --seed 12345 dataset.h5
