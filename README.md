@@ -1,21 +1,21 @@
 # Torchani-training
 
-### Create Dataset
-`datapack.py` gives an example how to create a h5 dataset file (dataset.h5), which could be read by torchani
+## Create Dataset
+`datapack.py` gives an example on how to create a h5 dataset file (dataset.h5), which could be read by torchani.
 ```
-python datapack.py
+python datapack.py  # to generate such dataset.h5
 ```
 
-### Training
-`training.py` gives a miminal example how to load dataset, and train with torchani
-You could check more detail at torchani documentation page: [Train Your Own Neural Network Potential — TorchANI 2.1.1 documentation](https://aiqm.github.io/torchani/examples/nnp_training.html)
-This script will use GPU by default if GPU is available. you can also specify cpu by using `--device cpu`
+## Training
+`training.py` gives a miminal example on how to load dataset, and train with torchani.  
+Check more detail at torchani documentation page: [Train Your Own Neural Network Potential — TorchANI 2.1.1 documentation](https://aiqm.github.io/torchani/examples/nnp_training.html)  
+If GPU is available, this script will use GPU by default, you can also specify CPU by using `--device cpu`
 
 Usage Example:
 ```bash
 python training.py --num_epochs 10 --batch_size 100 dataset.h5
 ```
-Output: Because this dataset is fake datapoints, it quickly went to overfit, you may need to adjust learning rate.
+Output: Because this dataset's datapints are fake, it quickly went to overfit, learning rate may need to be adjusted in this case.
 ```
 => loading dataset...
 => loading dataset.h5, total molecules: 2
@@ -34,7 +34,7 @@ Epoch: 4/10
 ...
 ```
 
-### For ensemble traning
+## Ensemble traning
 Usage Example:
 ```bash
 python training-ensemble.py --ensembles_size 8 --ensemble_index 0 --seed 12345 dataset.h5
