@@ -77,6 +77,7 @@ if __name__ == "__main__":
     EtaA = torch.tensor([8.0000000e+00], device=parser.device)
     ShfA = torch.tensor([9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00], device=parser.device)
     num_species = 4
+    species_order = ['H', 'C', 'N', 'O']
     aev_computer = torchani.AEVComputer(Rcr, Rca, EtaR, ShfR, EtaA, Zeta, ShfA, ShfZ, num_species)
     lr = 0.000001 #learning rate
 
@@ -87,7 +88,7 @@ if __name__ == "__main__":
 
     print('=> loading dataset...')
     energy_shifter = torchani.utils.EnergyShifter(None)
-    training_dataset, validation_dataset = torchani.data.load(parser.dataset_path).subtract_self_energies(energy_shifter).species_to_indices().shuffle().split(0.8, None)
+    training_dataset, validation_dataset = torchani.data.load(parser.dataset_path).subtract_self_energies(energy_shifter， species_order).species_to_indices(species_order).shuffle().split(0.8, None)
     training_dataset = training_dataset.collate(parser.batch_size).cache()
     validation_dataset = validation_dataset.collate(parser.batch_size).cache()
 
