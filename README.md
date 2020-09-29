@@ -1,13 +1,13 @@
 # Torchani-training
 
 ## Create Dataset
-`datapack.py` gives an example on how to create a h5 dataset file (dataset.h5), which could be read by torchani.
+[datapack.py](https://github.com/yueyericardo/torchani_training/blob/master/datapack.py) gives an example on how to create a h5 dataset file (dataset.h5), which could be read by torchani.
 ```
 python datapack.py  # to generate such dataset.h5
 ```
 
 ## Training
-`training.py` gives a miminal example on how to load dataset, and train with torchani.  
+[training.py](https://github.com/yueyericardo/torchani_training/blob/master/training.py) gives a miminal example on how to load dataset, and train with torchani.  
 Check more detail at torchani documentation page: [Train Your Own Neural Network Potential — TorchANI 2.1.1 documentation](https://aiqm.github.io/torchani/examples/nnp_training.html)  
 If GPU is available, this script will use GPU by default, you can also specify CPU by using `--device cpu`
 
@@ -41,4 +41,5 @@ python training-ensemble.py --ensembles_size 8 --ensemble_index 0 --seed 12345 d
 ```
 
 ## AEV calculation
-Because of padding issue with different length molecules, `aev_calc.ipynb` walks through some ways on how to calculate aevs for single molecule, multiple molecules, or ASE molecules.
+[aev_calc.ipynb](https://github.com/yueyericardo/torchani_training/blob/master/aev_calc.ipynb)
+walks through some ways on how to calculate aevs for single molecule, multiple molecules, or ase molecules. (Because of padding issue with different length molecules.)
