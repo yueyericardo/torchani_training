@@ -1,13 +1,9 @@
 import torch
 import torchani
-import time
-import timeit
 import argparse
 import pkbar
 import numpy as np
 from torchani.units import hartree2kcalmol
-
-synchronize = False
 
 H_network = torch.nn.Sequential(
     torch.nn.Linear(384, 160),
@@ -65,12 +61,6 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--num_epochs',
                         help='epochs',
                         default=3, type=int)
-    parser.add_argument('-e', '--ensembles_size',
-                        help='Number of ensembles',
-                        default=4, type=int)
-    parser.add_argument('-i', '--ensemble_index',
-                        help='Index of current ensemble (zero-indexed)',
-                        default=0, type=int)
     parser.add_argument('-s', '--seed',
                         help='Seed for reproducible shuffling',
                         default=12345, type=int)
@@ -88,32 +78,18 @@ if __name__ == "__main__":
     ShfA = torch.tensor([9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00], device=parser.device)
     num_species = 4
     aev_computer = torchani.AEVComputer(Rcr, Rca, EtaR, ShfR, EtaA, Zeta, ShfA, ShfZ, num_species)
+    lr = 0.000001 #learning rate
 
     nn = torchani.ANIModel([H_network, C_network, N_network, O_network])
     model = torch.nn.Sequential(aev_computer, nn).to(parser.device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.000001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     mse = torch.nn.MSELoss(reduction='none')
 
     print('=> loading dataset...')
-    shifter = torchani.EnergyShifter(None)
-    dataset = list(torchani.data.load(parser.dataset_path).subtract_self_energies(shifter).species_to_indices())
-    print()
-    shuffled_indices = torch.randperm(len(dataset))
-    shuffled_indices_ensembles = torch.chunk(shuffled_indices, parser.ensembles_size)
-    training_ensemble_indices = [i for i in range(parser.ensembles_size) if i != parser.ensemble_index]
-    validation_ensemble_index = parser.ensemble_index
-    training_indices = [d for i, d in enumerate(shuffled_indices_ensembles) if i != parser.ensemble_index]
-    training_indices = torch.cat(training_indices)
-    validation_indices = shuffled_indices_ensembles[validation_ensemble_index]
-    training_dataset = [dataset[i] for i in training_indices]
-    validation_dataset = [dataset[i] for i in validation_indices]
-    print(len(dataset))
-    print(len(training_indices))
-    print('Ensemble index (For validation): {}'.format(parser.ensemble_index))
-    print('Other ensemble index (training): {}'.format(training_ensemble_indices))
-
-    training_dataset = torch.utils.data.DataLoader(training_dataset, batch_size=parser.batch_size, collate_fn=torchani.data.collate_fn, num_workers=3)
-    validation_dataset = torch.utils.data.DataLoader(validation_dataset, batch_size=parser.batch_size, collate_fn=torchani.data.collate_fn, num_workers=3)
+    energy_shifter = torchani.utils.EnergyShifter(None)
+    training_dataset, validation_dataset = torchani.data.load(parser.dataset_path).subtract_self_energies(energy_shifter).species_to_indices().shuffle().split(0.8, None)
+    training_dataset = training_dataset.collate(parser.batch_size).cache()
+    validation_dataset = validation_dataset.collate(parser.batch_size).cache()
 
     print('=> start training')
 
