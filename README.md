@@ -1,5 +1,11 @@
 # Torchani-training
 
+## Requirements
+```
+conda install pytorch torchvision cudatoolkit=10.2 -c pytorch  # GPU version, for CPU version go https://pytorch.org/
+pip install torchani
+```
+
 ## Create Dataset
 `datapack.py` gives an example on how to create a h5 dataset file (dataset.h5), which could be read by torchani.
 ```
