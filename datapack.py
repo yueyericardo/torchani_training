@@ -1,4 +1,4 @@
-# In this example, it create a dataset h5 file, which has 30,000 CH4 molecules and 10,000 H2O molecules
+# In this example, it creates a dataset.h5 file, which has 30,000 CH4 molecules and 10,000 H2O molecules
 import torchani
 import numpy as np
 
