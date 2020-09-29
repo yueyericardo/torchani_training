@@ -5,8 +5,14 @@ import pkbar
 import numpy as np
 from torchani.units import hartree2kcalmol
 
+# network input size should match AEV output size:
+# 2 elments: AEV size 128 (32 (16*2) + 96 (8*4*(C3(2))))
+# 4 elments: AEV size 384 (64 (16*4) + 320 (8*4*(C5(2))))
+# 5 elments: AEV size 560 (80(16*5) + 480 (8*4*(C6(2))))
+# 6 elments: AEV size 768 (96(16*6) + 672 (8*4*(C7(2))))
+
 H_network = torch.nn.Sequential(
-    torch.nn.Linear(384, 160),
+    torch.nn.Linear(768, 160),
     torch.nn.CELU(0.1),
     torch.nn.Linear(160, 128),
     torch.nn.CELU(0.1),
@@ -16,7 +22,7 @@ H_network = torch.nn.Sequential(
 )
 
 C_network = torch.nn.Sequential(
-    torch.nn.Linear(384, 144),
+    torch.nn.Linear(768, 144),
     torch.nn.CELU(0.1),
     torch.nn.Linear(144, 112),
     torch.nn.CELU(0.1),
@@ -26,7 +32,7 @@ C_network = torch.nn.Sequential(
 )
 
 N_network = torch.nn.Sequential(
-    torch.nn.Linear(384, 128),
+    torch.nn.Linear(768, 128),
     torch.nn.CELU(0.1),
     torch.nn.Linear(128, 112),
     torch.nn.CELU(0.1),
@@ -36,7 +42,7 @@ N_network = torch.nn.Sequential(
 )
 
 O_network = torch.nn.Sequential(
-    torch.nn.Linear(384, 128),
+    torch.nn.Linear(768, 128),
     torch.nn.CELU(0.1),
     torch.nn.Linear(128, 112),
     torch.nn.CELU(0.1),
@@ -76,8 +82,8 @@ if __name__ == "__main__":
     ShfZ = torch.tensor([1.9634954e-01, 5.8904862e-01, 9.8174770e-01, 1.3744468e+00, 1.7671459e+00, 2.1598449e+00, 2.5525440e+00, 2.9452431e+00], device=parser.device)
     EtaA = torch.tensor([8.0000000e+00], device=parser.device)
     ShfA = torch.tensor([9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00], device=parser.device)
-    num_species = 4
-    species_order = ['H', 'C', 'N', 'O']
+    num_species = 6
+    species_order = ['H', 'C', 'N', 'O', 'Ar', 'V']
     aev_computer = torchani.AEVComputer(Rcr, Rca, EtaR, ShfR, EtaA, Zeta, ShfA, ShfZ, num_species)
     lr = 0.000001 #learning rate
 
@@ -88,7 +94,7 @@ if __name__ == "__main__":
 
     print('=> loading dataset...')
     energy_shifter = torchani.utils.EnergyShifter(None)
-    training_dataset, validation_dataset = torchani.data.load(parser.dataset_path).subtract_self_energies(energy_shifter， species_order).species_to_indices(species_order).shuffle().split(0.8, None)
+    training_dataset, validation_dataset = torchani.data.load(parser.dataset_path).subtract_self_energies(energy_shifter, species_order).species_to_indices(species_order).shuffle().split(0.8, None)
     training_dataset = training_dataset.collate(parser.batch_size).cache()
     validation_dataset = validation_dataset.collate(parser.batch_size).cache()
 
