@@ -51,6 +51,25 @@ O_network = torch.nn.Sequential(
     torch.nn.Linear(96, 1)
 )
 
+Ar_network = torch.nn.Sequential(
+    torch.nn.Linear(768, 128),
+    torch.nn.CELU(0.1),
+    torch.nn.Linear(128, 112),
+    torch.nn.CELU(0.1),
+    torch.nn.Linear(112, 96),
+    torch.nn.CELU(0.1),
+    torch.nn.Linear(96, 1)
+)
+
+V_network = torch.nn.Sequential(
+    torch.nn.Linear(768, 128),
+    torch.nn.CELU(0.1),
+    torch.nn.Linear(128, 112),
+    torch.nn.CELU(0.1),
+    torch.nn.Linear(112, 96),
+    torch.nn.CELU(0.1),
+    torch.nn.Linear(96, 1)
+)
 
 if __name__ == "__main__":
     # parse command line arguments
@@ -87,7 +106,7 @@ if __name__ == "__main__":
     aev_computer = torchani.AEVComputer(Rcr, Rca, EtaR, ShfR, EtaA, Zeta, ShfA, ShfZ, num_species)
     lr = 0.000001 #learning rate
 
-    nn = torchani.ANIModel([H_network, C_network, N_network, O_network])
+    nn = torchani.ANIModel([H_network, C_network, N_network, O_network, Ar_network, V_network])
     model = torch.nn.Sequential(aev_computer, nn).to(parser.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     mse = torch.nn.MSELoss(reduction='none')
