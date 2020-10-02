@@ -97,6 +97,11 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     mse = torch.nn.MSELoss(reduction='none')
 
+    other_properties = {'properties': ['forces'],
+                        'padding_values': [0.],
+                        'padded_shapes': [(parser.batch_size, -1, 3)],
+                        'dtypes': [torch.float64],
+                        }
     print('=> loading dataset...')
     if parser.dataset == 'shuffle':
         training_dataset, validation_dataset = ShuffledDataset(file_path=parser.dataset_path,
@@ -104,13 +109,15 @@ if __name__ == "__main__":
                                                                subtract_self_energies=True,
                                                                batch_size=parser.batch_size,
                                                                validation_split=0.1,
+                                                               other_properties=other_properties,
                                                                self_energies=[-0.600953, -38.08316, -54.707756, -75.194466],
-                                                               num_workers=10)
+                                                               num_workers=2)
     elif parser.dataset == 'cache':
         dataset = CachedDataset(file_path=parser.dataset_path,
                                 species_order=['H', 'C', 'N', 'O'],
                                 subtract_self_energies=True,
                                 batch_size=parser.batch_size,
+                                other_properties=other_properties,
                                 self_energies=[-0.600953, -38.08316, -54.707756, -75.194466])
         training_dataset, validation_dataset = dataset.split(0.1)
 
