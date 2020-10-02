@@ -35,16 +35,18 @@ energies = np.repeat(energies, 10000, axis=0)                   # energies shape
 # store H2O data
 dpack.store_data('H2O', coordinates=coordinates, energies=energies, species=species)
 
-# ArV, fake data, example of other elements
-species = ['Ar', 'V']
-coordinates = np.array([[[0.03192167, 0.00638559, 0.01301679],  # coordinates shape: (1, 2, 3)
-                         [-0.83140486, 0.39370209, -0.26395324]]
-                        ])
-energies = np.array([-10.0, ])                                  # energies shape: (1)
-# repeat to make more fake data
-coordinates = np.repeat(coordinates, 10000, axis=0)             # coordinates shape: (10000, 2, 3)
-energies = np.repeat(energies, 10000, axis=0)                   # energies shape: (10000)
-# store H2O data
-dpack.store_data('ArV', coordinates=coordinates, energies=energies, species=species)
+More_Elements = False
+if More_Elements:
+    # ArV, fake data, example of other elements
+    species = ['Ar', 'V']
+    coordinates = np.array([[[0.03192167, 0.00638559, 0.01301679],  # coordinates shape: (1, 2, 3)
+                            [-0.83140486, 0.39370209, -0.26395324]]
+                            ])
+    energies = np.array([-10.0, ])                                  # energies shape: (1)
+    # repeat to make more fake data
+    coordinates = np.repeat(coordinates, 10000, axis=0)             # coordinates shape: (10000, 2, 3)
+    energies = np.repeat(energies, 10000, axis=0)                   # energies shape: (10000)
+    # store H2O data
+    dpack.store_data('ArV', coordinates=coordinates, energies=energies, species=species)
 
 dpack.cleanup()
