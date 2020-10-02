@@ -67,14 +67,16 @@ if __name__ == "__main__":
     # for reproducible shuffling
     torch.manual_seed(parser.seed)
 
-    Rcr = 5.2000e+00
-    Rca = 3.5000e+00
-    EtaR = torch.tensor([1.6000000e+01], device=parser.device)
-    ShfR = torch.tensor([9.0000000e-01, 1.1687500e+00, 1.4375000e+00, 1.7062500e+00, 1.9750000e+00, 2.2437500e+00, 2.5125000e+00, 2.7812500e+00, 3.0500000e+00, 3.3187500e+00, 3.5875000e+00, 3.8562500e+00, 4.1250000e+00, 4.3937500e+00, 4.6625000e+00, 4.9312500e+00], device=parser.device)
-    Zeta = torch.tensor([3.2000000e+01], device=parser.device)
-    ShfZ = torch.tensor([1.9634954e-01, 5.8904862e-01, 9.8174770e-01, 1.3744468e+00, 1.7671459e+00, 2.1598449e+00, 2.5525440e+00, 2.9452431e+00], device=parser.device)
-    EtaA = torch.tensor([8.0000000e+00], device=parser.device)
-    ShfA = torch.tensor([9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00], device=parser.device)
+    # Variables for radial and angular equations
+    # https://pubs.acs.org/na101/home/literatum/publisher/achs/journals/content/jcisd8/2020/jcisd8.2020.60.issue-7/acs.jcim.0c00451/20200722/images/large/ci0c00451_0001.jpeg
+    Rcr = 5.2000e+00  # Rc for radial
+    Rca = 3.5000e+00  # Rc for angular
+    EtaR = torch.tensor([1.6000000e+01], device=parser.device)  # Eta for radial
+    ShfR = torch.tensor([9.0000000e-01, 1.1687500e+00, 1.4375000e+00, 1.7062500e+00, 1.9750000e+00, 2.2437500e+00, 2.5125000e+00, 2.7812500e+00, 3.0500000e+00, 3.3187500e+00, 3.5875000e+00, 3.8562500e+00, 4.1250000e+00, 4.3937500e+00, 4.6625000e+00, 4.9312500e+00], device=parser.device)  # Shift for radial
+    Zeta = torch.tensor([3.2000000e+01], device=parser.device)  # Zeta for angular
+    ShfZ = torch.tensor([1.9634954e-01, 5.8904862e-01, 9.8174770e-01, 1.3744468e+00, 1.7671459e+00, 2.1598449e+00, 2.5525440e+00, 2.9452431e+00], device=parser.device)  # theta_s for angular
+    EtaA = torch.tensor([8.0000000e+00], device=parser.device)  # Eta for angular
+    ShfA = torch.tensor([9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00], device=parser.device)  # R_s for angular
     num_species = 4
     species_order = ['H', 'C', 'N', 'O']
     aev_computer = torchani.AEVComputer(Rcr, Rca, EtaR, ShfR, EtaA, Zeta, ShfA, ShfZ, num_species)
