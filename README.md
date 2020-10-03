@@ -5,6 +5,7 @@
 # pytorch GPU version, for CPU version go https://pytorch.org/
 conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
 pip install torchani
+pip install h5py pkbar
 ```
 
 ## Create Dataset
