@@ -1,11 +1,10 @@
 # In this example, it creates a dataset.h5 file, which has 30,000 CH4 molecules and 10,000 H2O molecules
 import torchani
 import numpy as np
-import pyanitools
 # path to created h5 file,
 # in mode='w', file will be overwrite if exsist, be carefull!
 # https://docs.h5py.org/en/2.3/high/file.html for other mode
-dpack = pyanitools.datapacker('./dataset.h5', mode='w')
+dpack = torchani.data._pyanitools.datapacker('./dataset.h5', mode='w')
 
 # CH4, fake data
 species = ['C', 'H', 'H', 'H', 'H']
